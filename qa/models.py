@@ -24,7 +24,7 @@ class Question(models.Model):
 class Answer(models.Model):
 	text = models.TextField()
 	added_at = models.DateTimeField(auto_now_add=True)
-	question = models.ForeignKey(Question)
+	question = models.ForeignKey(Question, on_delete=models.CASCADE)
 	#author = models.ForeignKey(User)
 
 	def __unicode__(self):
