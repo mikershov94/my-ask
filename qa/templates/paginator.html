@@ -1,13 +1,14 @@
 <nav>
-	<ul class="pagination">
-		{% for p in paginator.page_range %}
-			{% if p == page.number %}
-			<li class="active">
+	<ul class="pagination">	<!-- обёртка "ненумерованный список" -->
+		{% for p in paginator.page_range %} <!-- перебираем страницы объекта Paginator
+												диапазон страниц хранится в свойстве page_range -->
+			{% if p == page.number %}		<!-- если номер страницы равен числу из свойства number объекта														page -->
+			<li class="active">		<!-- в этомслучае пункт "активен"  -->
 			{% else %}
 			<li>
 			{% endif %}
-			<a href="{{paginator.baseurl}}{{p}}">
-				{{ p }}
+			<a href="{{paginator.baseurl}}{{p}}"> <!-- подставляем URL из свойства объекта Paginator -->
+				{{ p }} <!-- номер страницы, который ссылается на URL страницы -->
 			</a>
 			</li>
 		{% endfor %}

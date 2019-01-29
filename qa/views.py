@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.paginator import Paginator
+from django.urls import reverse
 from qa.models import Question
+from qa.forms import AskForm, AnswerForm
 #import pudb
 
 # Create your views here.
@@ -59,4 +61,31 @@ def question_details(request, id):
 	question = get_object_or_404(Question, id=id)
 	return render(request, 'details.html', {
 		'question': question,
+		})
+
+def question_add(request):
+	if request.method == 'POST':	#если метод запроса POST
+		form = AskForm(request.POST)	#создаем объект AskForm с содержимым в POST параметре запроса (класс определен в forms.py)
+		if form.is_valid():			#проверка валидности формы - к объекту AskForm применяем метод is_valid() - 
+			question = form.save()	#если форма валидна - сохраняем содержимое формы в БД как объект Question
+			return HttpResponseRedirect(reverse(question_details, args=[question.id]))
+				#после сохрнения делаем редирект на страницу нового вопроса
+	else:		#если метод запроса GET
+		form = AskForm()	#создаем пустой объект класса AskForm
+	return render(request, 'ask.html',{
+		'form': form,
+		})
+
+def answer_add(request, question_id):
+	question = Question.objects.get(id=question_id)	#получаем из БД объект Question с заданным id
+	if request.method == 'POST':	#если метод запроса POST
+		form = AnswerForm(request.POST)	#создаем объект AnswerForm с содержимым в POST параметре запроса (класс определен в forms.py)
+		if form.is_valid():		#проверка валидности формы - к объекту AnswerForm применяем метод is_valid()
+			answer = form.save()	#если форма валидна - сохраняем содержимое формы в БД как объект Answer
+			url = question.get_url()	#получаем URL объекта Question
+			return HttpResponseRedirect(url)	#после сохранения объекта Answer делаем редирект на полученный URL
+	else:		#если метод запроса GET
+		form = AnswerForm()		#создаем пустой объект класса AskForm
+	return render(request, 'question_details.html', {
+		'form': form,
 		})
