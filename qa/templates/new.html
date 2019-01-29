@@ -4,17 +4,9 @@
 {% endblock title %}
 
 {% block content %}
-	<nav>
-		<ul class="pagination">
-			{% for p in paginator.page_range %}
-				{% if p.number == page.number %}
-					<li class="active">
-				{% else %}
-					<li>
-				{% endif %}
-					<a href="{{ paginator.baseurl }}{{ p.number }}"></a>
-				</li>
-			{% endfor %}
-		</ul>
-	</nav>
+	{% for q in questions %}
+		<h1>{{ q.title }}</h1>
+		<a href="/question/{{ q.id}}">More...</a>
+	{% endfor %}
+	{% include 'paginator.html' %}
 {% endblock content %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}
+	{{ block.super }}
+{% endblock title %}
+
+{% block content %}
+	{% for q in questions %}
+		<h1>{{ q.title }}</h1>
+		<a href="/question/{{ q.id}}">More...</a>
+	{% endfor %}
+	{% include 'paginator.html' %}
+{% endblock content %}
