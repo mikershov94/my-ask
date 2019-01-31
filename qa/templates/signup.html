@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}
+	{{ block.super }}
+{% endblock title %}
+
+{% block content %}
+	{% for e in form.non_fields_errors %}
+		{{ e }}
+	{% endfor %}
+	<form method="post" action="/signup/">
+		{% csrf_token %}
+		<fieldset>
+			{% for field in form %}
+				<div>
+					{% if form.errors %}Has errors{% endif %}
+					<label>{{ field.label }}</label>
+					<div>{{ field }}</div>
+				</div>
+			{% endfor %}
+		</fieldset>
+		<div>
+			<button type="submit">Sign Up</button>
+		</div>
+	</form>
+{% endblock content %}

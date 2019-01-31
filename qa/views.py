@@ -3,7 +3,9 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.paginator import Paginator
 from django.urls import reverse
 from qa.models import Question
-from qa.forms import AskForm, AnswerForm
+from qa.forms import AskForm, AnswerForm, SignupForm, LoginForm
+from qa.helper import do_login
+
 #import pudb
 
 # Create your views here.
@@ -39,7 +41,6 @@ def new_questions(request):
 	paginator = paginate(request, questions)	#создаем объект Paginator с помощью функции
 	paginator.baseurl = '/?page='
 	page = last_page(request, paginator)		#создаем объект page с помощью функции		
-	#pudb.set_trace()
 	return render(request, 'new.html', {
 		'questions': page.object_list,	#передаем список объектов Question как свойство объекта page (страница)
 		'paginator': paginator,			#передаем объект Paginator
@@ -87,5 +88,43 @@ def answer_add(request, question_id):
 	else:		#если метод запроса GET
 		form = AnswerForm()		#создаем пустой объект класса AskForm
 	return render(request, 'question_details.html', {
+		'form': form,
+		})
+
+def user_add(request):
+	if request.method == 'POST':
+		form = SignupForm(request.POST)
+		if form.is_valid():
+			login = form.fields['username']
+			password = form.fields['password']
+			user = form.save()
+			url = request.POST.get('continue', '/')
+			sessid = do_login(login, password)
+			if sessid:
+				response = HttpResponseRedirect(url)
+				response.set_cookie('sessid', sessid)
+				return response
+	else:
+		form = SignupForm()
+	return render(request, 'signup.html', {
+		'form': form,
+		})
+
+def login(request):
+	error = ''
+	if request.method == 'POST':
+		login = request.POST.get('login')
+		password = request.POST.get('password')
+		url = request.POST.get('continue', '/')
+		sessid = do_login(login, password)
+		if sessid:
+			response = HttpResponseRedirect(url)
+			response.set_cookie('sessid', sessid)
+			return response
+		else:
+			error = 'Bad login or password'
+	else:
+		form = LoginForm()
+	return render(request, 'login.html', {
 		'form': form,
 		})
