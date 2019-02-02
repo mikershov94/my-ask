@@ -37,6 +37,10 @@ class AskForm(forms.ModelForm):
 		model = Question
 		fields = ('title', 'text',)
 
+	def save(self):
+		self.cleaned_data['author'] = self._user
+		return Question.objects.create(**self.cleaned_data)
+
 class AnswerForm(forms.ModelForm):
 	class Meta:
 		model = Answer

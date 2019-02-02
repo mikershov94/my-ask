@@ -5,8 +5,7 @@ from django.urls import reverse
 from qa.models import Question
 from qa.forms import AskForm, AnswerForm, SignupForm, LoginForm
 from qa.helper import do_login
-
-#import pudb
+import pudb
 
 # Create your views here.
 def test(request, *args, **kwargs):
@@ -67,7 +66,9 @@ def question_details(request, id):
 def question_add(request):
 	if request.method == 'POST':	#если метод запроса POST
 		form = AskForm(request.POST)	#создаем объект AskForm с содержимым в POST параметре запроса (класс определен в forms.py)
+		form._user = request.user
 		if form.is_valid():			#проверка валидности формы - к объекту AskForm применяем метод is_valid() - 
+			pudb.set_trace()
 			question = form.save()	#если форма валидна - сохраняем содержимое формы в БД как объект Question
 			return HttpResponseRedirect(reverse(question_details, args=[question.id]))
 				#после сохрнения делаем редирект на страницу нового вопроса
@@ -81,6 +82,7 @@ def answer_add(request, question_id):
 	question = Question.objects.get(id=question_id)	#получаем из БД объект Question с заданным id
 	if request.method == 'POST':	#если метод запроса POST
 		form = AnswerForm(request.POST)	#создаем объект AnswerForm с содержимым в POST параметре запроса (класс определен в forms.py)
+		form._user = request.user
 		if form.is_valid():		#проверка валидности формы - к объекту AnswerForm применяем метод is_valid()
 			answer = form.save()	#если форма валидна - сохраняем содержимое формы в БД как объект Answer
 			url = question.get_url()	#получаем URL объекта Question
@@ -95,8 +97,8 @@ def user_add(request):
 	if request.method == 'POST':
 		form = SignupForm(request.POST)
 		if form.is_valid():
-			login = form.fields['username']
-			password = form.fields['password']
+			login = request.POST.get('username')
+			password = request.POST.get('password')
 			user = form.save()
 			url = request.POST.get('continue', '/')
 			sessid = do_login(login, password)
