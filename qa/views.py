@@ -13,12 +13,12 @@ def test(request, *args, **kwargs):
 
 def paginate(request, queryset):
 	try:
-		limit = int(request.GET.get('limit', 10))	#в переменную limit пишем значение из GET-запроса из параметра limit/
+		limit = int(request.GET.get('limit', 5))	#в переменную limit пишем значение из GET-запроса из параметра limit/
 													#если GET-параметр пуст - то записываем 10
 	except ValueError:		#при ощибке пишем 10
-		limit = 10
+		limit = 5
 	if limit > 100:		#ограничение объектов на странице до 100
-		limit = 10
+		limit = 5
 	paginator = Paginator(queryset, limit)	#создаем объект класса Paginator
 										#объект принимает в качестве аргументов список объектов Question и число объектов на странице
 	return paginator
